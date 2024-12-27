@@ -206,7 +206,10 @@ const database_models = {
           },
         },
         {
-          $unwind: "$userDetails",
+          $unwind: {
+            path: "$userDetails",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
           $project: {
