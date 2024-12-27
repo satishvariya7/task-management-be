@@ -4,7 +4,7 @@ class Controller {
   getAllActivities = async (req, res, next) => {
     const response = { message: "Activity list are empty!", data: [] };
     try {
-      const data = await db.getAllActivities();
+      const data = await db.getAllActivities(parseInt(req.params.value));
       if (data.length > 0) {
         response.data = data;
         response.message = "Get Activity successfully!";

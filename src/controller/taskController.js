@@ -109,7 +109,10 @@ class Controller {
   getMyTask = async (req, res, next) => {
     const response = { message: "Task list are empty!", data: [] };
     try {
-      const data = await db.getMyTasks(req.params.id);
+      const { id, value } = req.params;
+      const searchValue =
+        value === "all" ? null : JSON.parse(decodeURIComponent(value));
+      const data = await db.getMyTasks(req.params.id, searchValue);
       if (data) {
         response.data = data;
         response.message = "Get Task successfully!";

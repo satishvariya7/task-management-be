@@ -1,4 +1,5 @@
 const db = require("../database/mongoDB");
+const { ObjectId } = require("mongodb");
 
 class Controller {
   addProject = async (req, res, next) => {
@@ -9,6 +10,10 @@ class Controller {
         response.existProject = true;
         response.message = "Project name already exist!";
       } else {
+        req.body.userId = new ObjectId(req.body.userId);
+        req.body.teamMember.forEach((i) => {
+          i._id = new ObjectId(i?._id);
+        });
         await db.addProject(req.body);
         response.success = true;
       }
@@ -63,6 +68,19 @@ class Controller {
       if (data) {
         response.deleted = true;
         response.message = "Delete Project by id successfully!";
+      }
+      res.send(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+  getProjectWithId = async (req, res, next) => {
+    const response = { message: "Project list are empty!", data: [] };
+    try {
+      const data = await db.getIdProject(req.params.id);
+      if (data.length > 0) {
+        response.data = data;
+        response.message = "Get products successfully!";
       }
       res.send(response);
     } catch (error) {

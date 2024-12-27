@@ -19,6 +19,7 @@ const projectSchema = new mongoose.Schema({
   description: { type: String, required: true },
   teamMember: { type: Array, required: true },
   user: { type: String, required: true },
+  userId: { type: Object, required: true },
 });
 
 const taskSchema = new mongoose.Schema({
@@ -140,16 +141,21 @@ const database_models = {
     if (data.deletedCount > 0) return true;
     else return false;
   },
-  getMyTasks: async (userId) => {
+  getMyTasks: async (userId, searchValue) => {
     try {
+      const matchStage = {
+        $match: { "teamMember._id": new ObjectId(userId) },
+      };
+      if (searchValue) {
+        const searchCriteria = Object.keys(searchValue).reduce((acc, key) => {
+          acc[key] = searchValue[key];
+          return acc;
+        }, {});
+        matchStage.$match = { ...matchStage.$match, ...searchCriteria };
+      }
+
       const data = await tasks.aggregate([
-        {
-          $match: {
-            // userId: new ObjectId(userId),
-            "teamMember._id": new ObjectId(userId),
-          },
-          //Match task.teamMember._id :new ObjectId(userId),
-        },
+        matchStage,
         {
           $lookup: {
             from: "logged-users",
@@ -176,10 +182,11 @@ const database_models = {
           },
         },
       ]);
-      if (data && data?.length > 0) return data;
+      if (data && data.length > 0) return data;
       else return false;
     } catch (error) {
       console.log(error.message);
+      return false;
     }
   },
   //Activity models
@@ -187,7 +194,7 @@ const database_models = {
     const data = await new activities(activity);
     return data.save();
   },
-  getAllActivities: async () => {
+  getAllActivities: async (value) => {
     try {
       const data = await activities.aggregate([
         {
@@ -210,11 +217,42 @@ const database_models = {
             category: "$userDetails.category",
           },
         },
+        { $limit: value },
       ]);
       return data;
     } catch (error) {
       console.log(error.message);
     }
+  },
+  getIdProject: async (userId) => {
+    const data = await activities.aggregate([
+      {
+        $match: {
+          userId: new ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "logged-users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: "$userDetails",
+      },
+      {
+        $project: {
+          activity: 1,
+          activity: 1,
+          time: 1,
+          name: "$userDetails.name",
+        },
+      },
+    ]);
+
+    return data;
   },
 };
 

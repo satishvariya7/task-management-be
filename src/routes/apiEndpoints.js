@@ -17,12 +17,12 @@ const ENDPOINTS = {
   //Task Endpoint
   ADD_TASK: "/add",
   GET_ALL_TASK: "/all",
-  GET_MY_TASK: "/my-task/:id",
+  GET_MY_TASK: "/my-task/:id/:value",
   GET_TASK_BY_ID: "/:id",
   UPDATE_TASK_BY_ID: "/update/:id",
   DELETE_TASK_BY_ID: "/delete/:id/:userId",
   //Task Endpoint
-  GET_ACTIVITY: "/all",
+  GET_ACTIVITY: "/all/:value",
 };
 
 module.exports = ENDPOINTS;
