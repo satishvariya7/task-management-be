@@ -27,6 +27,5 @@ router.delete(
   controller.deleteProjectById
 );
 
-router.get("/get/:id", controller.getProjectWithId);
 
 module.exports = router;

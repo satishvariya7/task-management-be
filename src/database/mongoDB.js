@@ -224,36 +224,6 @@ const database_models = {
       console.log(error.message);
     }
   },
-  getIdProject: async (userId) => {
-    const data = await activities.aggregate([
-      {
-        $match: {
-          userId: new ObjectId(userId),
-        },
-      },
-      {
-        $lookup: {
-          from: "logged-users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "userDetails",
-        },
-      },
-      {
-        $unwind: "$userDetails",
-      },
-      {
-        $project: {
-          activity: 1,
-          activity: 1,
-          time: 1,
-          name: "$userDetails.name",
-        },
-      },
-    ]);
-
-    return data;
-  },
 };
 
 module.exports = database_models;

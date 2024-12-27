@@ -74,19 +74,6 @@ class Controller {
       next(error);
     }
   };
-  getProjectWithId = async (req, res, next) => {
-    const response = { message: "Project list are empty!", data: [] };
-    try {
-      const data = await db.getIdProject(req.params.id);
-      if (data.length > 0) {
-        response.data = data;
-        response.message = "Get products successfully!";
-      }
-      res.send(response);
-    } catch (error) {
-      next(error);
-    }
-  };
 }
 
 module.exports = new Controller();
